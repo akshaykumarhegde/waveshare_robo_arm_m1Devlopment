@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waveshare RoArm-M1 Studio & Demo Controller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-card: rgba(18, 24, 38, 0.75);
+      --bg-card-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00f0ff;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-orange: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --glow-cyan: 0 0 20px rgba(0, 240, 255, 0.35);
+      --glow-blue: 0 0 20px rgba(59, 130, 246, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 20% 20%, #111827 0%, #0a0e17 100%);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: rgba(10, 14, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--bg-card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--glow-cyan);
+      font-size: 20px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ffffff, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .connection-panel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid var(--bg-card-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-orange);
+      box-shadow: 0 0 10px var(--accent-orange);
+      transition: all 0.3s;
+    }
+
+    .status-dot.connected {
+      background: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .status-dot.mock {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #000;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--accent-red);
+    }
+
+    .btn-danger:hover {
+      background: var(--accent-red);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--bg-card-border);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr 340px;
+      gap: 20px;
+      padding: 24px;
+      flex: 1;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 12px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .control-label span:last-child {
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: var(--glow-cyan);
+      transition: transform 0.1s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .visualizer-container {
+      position: relative;
+      background: rgba(5, 8, 15, 0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .btn-action .icon {
+      font-size: 22px;
+    }
+
+    .terminal {
+      background: #05070d;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #38bdf8;
+      padding: 12px;
+      height: 180px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    .terminal-line {
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+
+    .terminal-line.sent {
+      color: #34d399;
+    }
+
+    .terminal-line.info {
+      color: #a78bfa;
+    }
+
+    .terminal-line.warn {
+      color: #fbbf24;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--accent-cyan);
+    }
+
+    .coord-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .input-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .input-box:focus {
+      border-color: var(--accent-cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🦾</div>
+      <div>
+        <div class="brand-title">Waveshare RoArm-M1 Studio</div>
+        <div class="brand-subtitle">5-DOF ESP32 Robotic Arm Controller</div>
+      </div>
+    </div>
+
+    <div class="connection-panel">
+      <div class="status-badge">
+        <div id="statusDot" class="status-dot mock"></div>
+        <span id="statusText">Simulation / Mock Mode</span>
+      </div>
+      <button id="connectSerialBtn" class="btn btn-primary">
+        <span>🔌</span> Connect USB (WebSerial)
+      </button>
+      <button id="estopBtn" class="btn btn-danger">
+        <span>🛑</span> E-STOP
+      </button>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+
+    <!-- LEFT COLUMN: JOINT & KINEMATIC CONTROLS -->
+    <section class="card">
+      <div class="card-header">
+        <span class="card-title">🎛️ Arm Joint Angles (T: 1)</span>
+        <button id="resetJointsBtn" class="btn btn-secondary" style="padding:4px 10px; font-size:0.75rem;">Reset Init</button>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Base Pan (Joint 1)</span>
+          <span id="valJ1">180.0°</span>
+        </div>
+        <input type="range" id="sliderJ1" class="slider" min="0" max="360" value="180" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Shoulder Pitch (Joint 2 - 1:3 Reduction)</span>
+          <span id="valJ2">0.0°</span>
+        </div>
+        <input type="range" id="sliderJ2" class="slider" min="-90" max="90" value="0" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Elbow Forearm (Joint 3)</span>
+          <span id="valJ3">90.0°</span>
+        </div>
+        <input type="range" id="sliderJ3" class="slider" min="0" max="270" value="90" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Wrist Pitch (Joint 4)</span>
+          <span id="valJ4">90.0°</span>
+        </div>
+        <input type="range" id="sliderJ4" class="slider" min="0" max="115" value="90" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Gripper Clamp (Joint 5: 180° Open, 360° Close)</span>
+          <span id="valJ5">180.0°</span>
+        </div>
+        <input type="range" id="sliderJ5" class="slider" min="180" max="360" value="180" step="1">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button id="openGripperBtn" class="btn btn-secondary" style="flex:1;">🔓 Open</button>
+        <button id="closeGripperBtn" class="btn btn-secondary" style="flex:1;">🔒 Close</button>
+      </div>
+
+      <div class="card-header" style="margin-top:10px;">
+        <span class="card-title">📐 Cartesian Space (T: 2)</span>
+      </div>
+
+      <div class="coord-grid">
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">X (mm reach)</label>
+          <input type="number" id="inputX" class="input-box" value="277.5">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Y (mm pan)</label>
+          <input type="number" id="inputY" class="input-box" value="-13.8">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Z (mm height)</label>
+          <input type="number" id="inputZ" class="input-box" value="276.6">
+        </div>
+        <div>
+          <label style="font-size:0.75rem; color:var(--text-muted);">Theta (deg pitch)</label>
+          <input type="number" id="inputTheta" class="input-box" value="90">
+        </div>
+      </div>
+      <button id="sendCartesianBtn" class="btn btn-primary" style="width:100%; justify-content:center;">
+        🚀 Send Cartesian Pose (IK)
+      </button>
+    </section>
+
+    <!-- CENTER COLUMN: 2D/3D KINEMATIC ARM VISUALIZER -->
+    <section class="card" style="display:flex; flex-direction:column;">
+      <div class="card-header">
+        <span class="card-title">👁️ Live Kinematic Posture Visualizer</span>
+        <span style="font-size:0.8rem; color:var(--accent-cyan); font-family:'JetBrains Mono';">Side Elevation View</span>
+      </div>
+
+      <div class="visualizer-container">
+        <div class="grid-overlay"></div>
+        <svg id="armCanvas" width="100%" height="100%" viewBox="-150 -50 500 450" style="overflow:visible;">
+          <defs>
+            <radialGradient id="jointGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#00f0ff" stop-opacity="0" />
+            </radialGradient>
+          </defs>
+
+          <!-- Base Table -->
+          <line x1="-120" y1="360" x2="380" y2="360" stroke="#334155" stroke-width="4" stroke-linecap="round" />
+          <rect x="-30" y="320" width="60" height="40" rx="4" fill="#1e293b" stroke="#00f0ff" stroke-width="1.5" />
+
+          <!-- Links -->
+          <line id="link1" x1="0" y1="320" x2="0" y2="240" stroke="#64748b" stroke-width="14" stroke-linecap="round" />
+          <line id="link2" x1="0" y1="240" x2="100" y2="130" stroke="#3b82f6" stroke-width="12" stroke-linecap="round" />
+          <line id="link3" x1="100" y1="130" x2="200" y2="170" stroke="#00f0ff" stroke-width="10" stroke-linecap="round" />
+          <line id="link4" x1="200" y1="170" x2="260" y2="210" stroke="#8b5cf6" stroke-width="8" stroke-linecap="round" />
+
+          <!-- Gripper Claws -->
+          <line id="clawL" x1="260" y1="210" x2="290" y2="200" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
+          <line id="clawR" x1="260" y1="210" x2="290" y2="225" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
+
+          <!-- Joint Circles -->
+          <circle cx="0" cy="320" r="10" fill="#0f172a" stroke="#00f0ff" stroke-width="3" />
+          <circle id="joint2" cx="0" cy="240" r="10" fill="#0f172a" stroke="#00f0ff" stroke-width="3" />
+          <circle id="joint3" cx="100" cy="130" r="9" fill="#0f172a" stroke="#3b82f6" stroke-width="3" />
+          <circle id="joint4" cx="200" cy="170" r="8" fill="#0f172a" stroke="#00f0ff" stroke-width="3" />
+          <circle id="joint5" cx="260" cy="210" r="6" fill="#0f172a" stroke="#f59e0b" stroke-width="2" />
+        </svg>
+      </div>
+
+      <!-- JSON Telemetry & Packet Log -->
+      <div class="card-header" style="margin-top:10px;">
+        <span class="card-title">📡 Real-Time Protocol Stream</span>
+        <button id="clearLogBtn" class="btn btn-secondary" style="padding:2px 8px; font-size:0.7rem;">Clear</button>
+      </div>
+      <div id="terminalLog" class="terminal">
+        <div class="terminal-line info">[INIT] Waveshare RoArm-M1 Studio Ready.</div>
+        <div class="terminal-line info">[MODE] WebSerial API or Mock Mode active.</div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: AUTOMATED DEMO ROUTINES & ACTIONS -->
+    <section class="card">
+      <div class="card-header">
+        <span class="card-title">⚡ Motion Presets & Routines</span>
+      </div>
+
+      <div class="action-grid">
+        <button id="demoWaveBtn" class="btn-action">
+          <span class="icon">👋</span>
+          <span>Wave Hello</span>
+        </button>
+
+        <button id="demoPickPlaceBtn" class="btn-action">
+          <span class="icon">📦</span>
+          <span>Pick & Place</span>
+        </button>
+
+        <button id="demoCircleBtn" class="btn-action">
+          <span class="icon">🔄</span>
+          <span>Circle Scan</span>
+        </button>
+
+        <button id="demoDanceBtn" class="btn-action">
+          <span class="icon">💃</span>
+          <span>Arm Dance</span>
+        </button>
+      </div>
+
+      <div class="card-header" style="margin-top:10px;">
+        <span class="card-title">🛠️ Calibration & Power</span>
+      </div>
+
+      <button id="torqueToggleBtn" class="btn btn-secondary" style="width:100%; justify-content:center;">
+        🔓 Unlock Torque (Hand Teach)
+      </button>
+
+      <button id="queryDevBtn" class="btn btn-secondary" style="width:100%; justify-content:center;">
+        ℹ️ Query Device Info (T: 4)
+      </button>
+
+      <button id="queryAnglesBtn" class="btn btn-secondary" style="width:100%; justify-content:center;">
+        📊 Query Angle & Load (T: 5)
+      </button>
+
+      <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05); font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
+        <b style="color:#fff;">Hardware Note:</b> To connect directly via USB, ensure you open this page in Chrome or Edge and click <i>Connect USB</i>. Power the arm with 12V 5A DC adapter before enabling torque.
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Arm state
+    let serialPort = null;
+    let serialWriter = null;
+    let serialReader = null;
+    let isConnected = false;
+    let torqueOn = true;
+
+    // Joint angles
+    let angles = {
+      j1: 180, // Base pan
+      j2: 0,   // Shoulder (0 = vertical straight)
+      j3: 90,  // Elbow
+      j4: 90,  // Wrist pitch
+      j5: 180  // Gripper
+    };
+
+    // DOM Elements
+    const sJ1 = document.getElementById('sliderJ1');
+    const sJ2 = document.getElementById('sliderJ2');
+    const sJ3 = document.getElementById('sliderJ3');
+    const sJ4 = document.getElementById('sliderJ4');
+    const sJ5 = document.getElementById('sliderJ5');
+
+    const vJ1 = document.getElementById('valJ1');
+    const vJ2 = document.getElementById('valJ2');
+    const vJ3 = document.getElementById('valJ3');
+    const vJ4 = document.getElementById('valJ4');
+    const vJ5 = document.getElementById('valJ5');
+
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const term = document.getElementById('terminalLog');
+
+    function log(msg, type = "info") {
+      const line = document.createElement('div');
+      line.className = `terminal-line ${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    // Kinematic Canvas Update (Trigonometry side view)
+    function updateVisualizer() {
+      // Base link
+      const baseX = 0;
+      const baseY = 320;
+      const L1 = 80;  // Base vertical
+      const L2 = 120; // Shoulder
+      const L3 = 100; // Forearm
+      const L4 = 60;  // Wrist
+
+      const rad2 = angles.j2 * (Math.PI / 180);
+      const rad3 = rad2 + (angles.j3 - 90) * (Math.PI / 180);
+      const rad4 = rad3 - angles.j4 * (Math.PI / 180);
+
+      const p1x = baseX;
+      const p1y = baseY - L1;
+
+      const p2x = p1x + L2 * Math.sin(rad2);
+      const p2y = p1y - L2 * Math.cos(rad2);
+
+      const p3x = p2x + L3 * Math.sin(rad3);
+      const p3y = p2y - L3 * Math.cos(rad3);
+
+      const p4x = p3x + L4 * Math.sin(rad4);
+      const p4y = p3y - L4 * Math.cos(rad4);
+
+      // Claws (180° = Open, 360° = Close)
+      const openRatio = Math.max(0.0, Math.min(1.0, (360.0 - angles.j5) / 180.0));
+      const clawSpread = openRatio * 20.0;
+      const c1x = p4x + 25 * Math.sin(rad4 - 0.3 - clawSpread * 0.02);
+      const c1y = p4y - 25 * Math.cos(rad4 - 0.3 - clawSpread * 0.02);
+      const c2x = p4x + 25 * Math.sin(rad4 + 0.3 + clawSpread * 0.02);
+      const c2y = p4y - 25 * Math.cos(rad4 + 0.3 + clawSpread * 0.02);
+
+      // Update SVG
+      document.getElementById('link1').setAttribute('x2', p1x);
+      document.getElementById('link1').setAttribute('y2', p1y);
+
+      document.getElementById('joint2').setAttribute('cx', p1x);
+      document.getElementById('joint2').setAttribute('cy', p1y);
+
+      document.getElementById('link2').setAttribute('x1', p1x);
+      document.getElementById('link2').setAttribute('y1', p1y);
+      document.getElementById('link2').setAttribute('x2', p2x);
+      document.getElementById('link2').setAttribute('y2', p2y);
+
+      document.getElementById('joint3').setAttribute('cx', p2x);
+      document.getElementById('joint3').setAttribute('cy', p2y);
+
+      document.getElementById('link3').setAttribute('x1', p2x);
+      document.getElementById('link3').setAttribute('y1', p2y);
+      document.getElementById('link3').setAttribute('x2', p3x);
+      document.getElementById('link3').setAttribute('y2', p3y);
+
+      document.getElementById('joint4').setAttribute('cx', p3x);
+      document.getElementById('joint4').setAttribute('cy', p3y);
+
+      document.getElementById('link4').setAttribute('x1', p3x);
+      document.getElementById('link4').setAttribute('y1', p3y);
+      document.getElementById('link4').setAttribute('x2', p4x);
+      document.getElementById('link4').setAttribute('y2', p4y);
+
+      document.getElementById('joint5').setAttribute('cx', p4x);
+      document.getElementById('joint5').setAttribute('cy', p4y);
+
+      document.getElementById('clawL').setAttribute('x1', p4x);
+      document.getElementById('clawL').setAttribute('y1', p4y);
+      document.getElementById('clawL').setAttribute('x2', c1x);
+      document.getElementById('clawL').setAttribute('y2', c1y);
+
+      document.getElementById('clawR').setAttribute('x1', p4x);
+      document.getElementById('clawR').setAttribute('y1', p4y);
+      document.getElementById('clawR').setAttribute('x2', c2x);
+      document.getElementById('clawR').setAttribute('y2', c2y);
+    }
+
+    // Send JSON Command
+    async function sendCommand(obj) {
+      const jsonStr = JSON.stringify(obj);
+      log(`TX: ${jsonStr}`, "sent");
+
+      if (isConnected && serialWriter) {
+        try {
+          const encoder = new TextEncoder();
+          await serialWriter.write(encoder.encode(jsonStr + "\n"));
+        } catch (e) {
+          log(`Write error: ${e.message}`, "warn");
+        }
+      }
+    }
+
+    function syncSliders() {
+      angles.j1 = parseFloat(sJ1.value);
+      angles.j2 = parseFloat(sJ2.value);
+      angles.j3 = parseFloat(sJ3.value);
+      angles.j4 = parseFloat(sJ4.value);
+      angles.j5 = parseFloat(sJ5.value);
+
+      vJ1.textContent = angles.j1.toFixed(1) + "°";
+      vJ2.textContent = angles.j2.toFixed(1) + "°";
+      vJ3.textContent = angles.j3.toFixed(1) + "°";
+      vJ4.textContent = angles.j4.toFixed(1) + "°";
+      vJ5.textContent = angles.j5.toFixed(1) + "°";
+
+      updateVisualizer();
+    }
+
+    let throttleTimeout = null;
+    function sendJointPoseThrottled() {
+      syncSliders();
+      if (!throttleTimeout) {
+        throttleTimeout = setTimeout(() => {
+          sendCommand({
+            T: 1,
+            P1: angles.j1,
+            P2: angles.j2,
+            P3: angles.j3,
+            P4: angles.j4,
+            P5: angles.j5,
+            S1: 200, S2: 200, S3: 200, S4: 200, S5: 200,
+            A1: 60, A2: 60, A3: 60, A4: 60, A5: 60
+          });
+          throttleTimeout = null;
+        }, 120);
+      }
+    }
+
+    [sJ1, sJ2, sJ3, sJ4, sJ5].forEach(s => {
+      s.addEventListener('input', sendJointPoseThrottled);
+    });
+
+    // WebSerial Connection
+    document.getElementById('connectSerialBtn').addEventListener('click', async () => {
+      if (!("serial" in navigator)) {
+        alert("WebSerial is not supported in this browser. Please use Chrome, Edge, or Opera.");
+        return;
+      }
+      try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+        serialWriter = serialPort.writable.getWriter();
+        isConnected = true;
+        statusDot.className = "status-dot connected";
+        statusText.textContent = "USB Connected (115200)";
+        document.getElementById('connectSerialBtn').textContent = "🔌 Connected";
+        log("Connected to RoArm-M1 via WebSerial!", "info");
+
+        // Read loop
+        readSerialLoop();
+      } catch (err) {
+        log(`Connection failed: ${err.message}`, "warn");
+      }
+    });
+
+    async function readSerialLoop() {
+      const textDecoder = new TextDecoderStream();
+      const readableStreamClosed = serialPort.readable.pipeTo(textDecoder.writable);
+      const reader = textDecoder.readable.getReader();
+      let buffer = "";
+
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += value;
+          const lines = buffer.split("\n");
+          buffer = lines.pop();
+          for (const line of lines) {
+            const clean = line.trim();
+            if (clean) log(`RX: ${clean}`, "info");
+          }
+        }
+      } catch (e) {
+        log(`Read loop ended: ${e.message}`, "warn");
+      }
+    }
+
+    // Button Actions
+    document.getElementById('estopBtn').addEventListener('click', () => {
+      sendCommand({ T: 0 });
+      log("EMERGENCY STOP SENT", "warn");
+    });
+
+    document.getElementById('resetJointsBtn').addEventListener('click', () => {
+      sendCommand({ T: 11 });
+      sJ1.value = 180; sJ2.value = 0; sJ3.value = 90; sJ4.value = 90; sJ5.value = 180;
+      syncSliders();
+    });
+
+    document.getElementById('openGripperBtn').addEventListener('click', () => {
+      sJ5.value = 180;
+      sendJointPoseThrottled();
+    });
+
+    document.getElementById('closeGripperBtn').addEventListener('click', () => {
+      sJ5.value = 360;
+      sendJointPoseThrottled();
+    });
+
+    document.getElementById('sendCartesianBtn').addEventListener('click', () => {
+      const x = parseFloat(document.getElementById('inputX').value);
+      const y = parseFloat(document.getElementById('inputY').value);
+      const z = parseFloat(document.getElementById('inputZ').value);
+      const theta = parseFloat(document.getElementById('inputTheta').value);
+      sendCommand({
+        T: 2,
+        P1: x, P2: y, P3: z, P4: theta, P5: angles.j5,
+        S1: 10, S5: 200
+      });
+    });
+
+    document.getElementById('torqueToggleBtn').addEventListener('click', () => {
+      torqueOn = !torqueOn;
+      sendCommand({ T: 8, P1: torqueOn ? 1 : 0 });
+      document.getElementById('torqueToggleBtn').textContent = torqueOn ? "🔓 Unlock Torque (Hand Teach)" : "🔒 Lock Torque (Torque ON)";
+      log(`Torque set to: ${torqueOn ? 'ON' : 'OFF'}`, "info");
+    });
+
+    document.getElementById('queryDevBtn').addEventListener('click', () => sendCommand({ T: 4 }));
+    document.getElementById('queryAnglesBtn').addEventListener('click', () => sendCommand({ T: 5 }));
+    document.getElementById('clearLogBtn').addEventListener('click', () => term.innerHTML = "");
+
+    // Demo Animations
+    document.getElementById('demoWaveBtn').addEventListener('click', async () => {
+      log("[DEMO] Starting Waving Sequence...", "info");
+      sJ1.value = 180; sJ2.value = 45; sJ3.value = 60; sJ4.value = 100; syncSliders();
+      sendCommand({ T: 1, P1: 180, P2: 45, P3: 60, P4: 100, P5: 180, S1: 300, S2: 300, S3: 300, S4: 300, S5: 300, A1: 60, A2: 60, A3: 60, A4: 60, A5: 60 });
+      await new Promise(r => setTimeout(r, 800));
+
+      for (let i = 0; i < 3; i++) {
+        sJ1.value = 210; syncSliders();
+        sendCommand({ T: 1, P1: 210, P2: 45, P3: 60, P4: 120, P5: 180, S1: 400, S2: 400, S3: 400, S4: 400, S5: 400, A1: 60, A2: 60, A3: 60, A4: 60, A5: 60 });
+        await new Promise(r => setTimeout(r, 400));
+        sJ1.value = 150; syncSliders();
+        sendCommand({ T: 1, P1: 150, P2: 45, P3: 60, P4: 80, P5: 180, S1: 400, S2: 400, S3: 400, S4: 400, S5: 400, A1: 60, A2: 60, A3: 60, A4: 60, A5: 60 });
+        await new Promise(r => setTimeout(r, 400));
+      }
+
+      sJ1.value = 180; syncSliders();
+      sendCommand({ T: 1, P1: 180, P2: 45, P3: 60, P4: 100, P5: 180, S1: 300, S2: 300, S3: 300, S4: 300, S5: 300, A1: 60, A2: 60, A3: 60, A4: 60, A5: 60 });
+      log("[DEMO] Waving complete.", "info");
+    });
+
+    document.getElementById('demoPickPlaceBtn').addEventListener('click', async () => {
+      log("[DEMO] Running Cartesian Pick and Place Sequence...", "info");
+      const steps = [
+        { P1: 230, P2: -90, P3: 220, P4: 90, P5: 180, desc: "Hovering over pick station" },
+        { P1: 230, P2: -90, P3: 120, P4: 90, P5: 180, desc: "Lowering to pick item" },
+        { P1: 230, P2: -90, P3: 120, P4: 90, P5: 360, desc: "Closing gripper clamp" },
+        { P1: 230, P2: -90, P3: 220, P4: 90, P5: 360, desc: "Lifting item" },
+        { P1: 230, P2: 90, P3: 220, P4: 90, P5: 360, desc: "Traversing to place station" },
+        { P1: 230, P2: 90, P3: 120, P4: 90, P5: 360, desc: "Lowering to place" },
+        { P1: 230, P2: 90, P3: 120, P4: 90, P5: 180, desc: "Opening gripper clamp" },
+        { P1: 230, P2: 90, P3: 220, P4: 90, P5: 180, desc: "Retracting to safe altitude" }
+      ];
+
+      for (const st of steps) {
+        log(`-> ${st.desc}`, "info");
+        document.getElementById('inputX').value = st.P1;
+        document.getElementById('inputY').value = st.P2;
+        document.getElementById('inputZ').value = st.P3;
+        sendCommand({ T: 2, ...st, S1: 10, S5: 200 });
+        await new Promise(r => setTimeout(r, 700));
+      }
+      log("[DEMO] Pick & Place finished.", "info");
+    });
+
+    document.getElementById('demoCircleBtn').addEventListener('click', async () => {
+      log("[DEMO] Tracing circular scan...", "info");
+      const cx = 240, cy = 0, r = 45, z = 200;
+      for (let i = 0; i <= 12; i++) {
+        const rad = 2 * Math.PI * (i / 12);
+        const x = cx + r * Math.cos(rad);
+        const y = cy + r * Math.sin(rad);
+        document.getElementById('inputX').value = x.toFixed(1);
+        document.getElementById('inputY').value = y.toFixed(1);
+        document.getElementById('inputZ').value = z;
+        sendCommand({ T: 2, P1: x, P2: y, P3: z, P4: 90, P5: 180, S1: 12, S5: 200 });
+        await new Promise(res => setTimeout(res, 180));
+      }
+      log("[DEMO] Circular scan complete.", "info");
+    });
+
+    document.getElementById('demoDanceBtn').addEventListener('click', async () => {
+      log("[DEMO] Robotic dance routine!", "info");
+      const poses = [
+        { P1: 160, P2: 60, P3: 45, P4: 120, P5: 120 },
+        { P1: 200, P2: 20, P3: 110, P4: 70, P5: 180 },
+        { P1: 170, P2: 70, P3: 40, P4: 130, P5: 95 },
+        { P1: 190, P2: 10, P3: 90, P4: 90, P5: 180 }
+      ];
+      for (const p of poses) {
+        sJ1.value = p.P1; sJ2.value = p.P2; sJ3.value = p.P3; sJ4.value = p.P4; sJ5.value = p.P5;
+        syncSliders();
+        sendCommand({ T: 1, ...p, S1: 300, S2: 300, S3: 300, S4: 300, S5: 300, A1: 60, A2: 60, A3: 60, A4: 60, A5: 60 });
+        await new Promise(r => setTimeout(r, 600));
+      }
+      log("[DEMO] Dance finished.", "info");
+    });
+
+    // Initialize display
+    syncSliders();
+  </script>
+</body>
+</html>

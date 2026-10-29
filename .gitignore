@@ -1,0 +1,21 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build and ROS2 artifacts
+build/
+install/
+log/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Temporary logs
+*.log

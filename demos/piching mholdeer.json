@@ -1,0 +1,151 @@
+{
+  "format": "RoArm-M1-Routine",
+  "version": 1.0,
+  "created": "2026-10-29T13:43:26.256335",
+  "total_steps": 11,
+  "waypoints": [
+    {
+      "type": "gripper",
+      "angles": [
+        179.6484375,
+        -0.029296875,
+        90.26367188,
+        89.20898438,
+        360.0
+      ],
+      "duration": 0.8,
+      "delay": 0.2,
+      "note": "Close Gripper"
+    },
+    {
+      "type": "gripper",
+      "angles": [
+        179.6484375,
+        -0.029296875,
+        90.26367188,
+        89.20898438,
+        180.0
+      ],
+      "duration": 0.8,
+      "delay": 0.2,
+      "note": "Open Gripper"
+    },
+    {
+      "type": "gripper",
+      "angles": [
+        179.6484375,
+        -0.029296875,
+        90.26367188,
+        89.20898438,
+        360.0
+      ],
+      "duration": 0.8,
+      "delay": 0.2,
+      "note": "Close Gripper"
+    },
+    {
+      "type": "gripper",
+      "angles": [
+        179.6484375,
+        -0.029296875,
+        90.26367188,
+        89.20898438,
+        180.0
+      ],
+      "duration": 0.8,
+      "delay": 0.2,
+      "note": "Open Gripper"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        177.9,
+        35.4,
+        59.8,
+        89.0,
+        180.8
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 5"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        144.5,
+        64.7,
+        29.1,
+        87.8,
+        180.8
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 6"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        149.0,
+        64.7,
+        28.3,
+        81.1,
+        254.8
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 7"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        148.8,
+        64.7,
+        28.5,
+        81.1,
+        198.7
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 8"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        149.2,
+        22.9,
+        28.5,
+        81.1,
+        198.7
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 9"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        180.5,
+        27.2,
+        41.9,
+        80.9,
+        198.7
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 10"
+    },
+    {
+      "type": "pose",
+      "angles": [
+        181.1,
+        63.2,
+        39.6,
+        79.9,
+        198.7
+      ],
+      "duration": 1.2,
+      "delay": 0.3,
+      "note": "Waypoint 11"
+    }
+  ]
+}
