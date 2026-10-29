@@ -247,26 +247,39 @@ python3 demos/ros2_demo_publisher.py
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Start Guide (New System Setup)
 
-### Hardware Setup & Serial Permissions
+### 1. Download Repository
+```bash
+git clone https://github.com/akshaykumarhegde/waveshare_robo_arm_m1Devlopment.git
+cd waveshare_robo_arm_m1Devlopment
+```
 
+### 2. Automated One-Command Installation (Linux / Ubuntu / Debian)
+Run the automated setup script to install all system tools, Python dependencies, and configure USB serial permissions:
+```bash
+chmod +x install_dependencies.sh
+./install_dependencies.sh
+```
+
+*(Optional: Manual Installation)*
+```bash
+# System packages & Tkinter GUI support
+sudo apt-get update && sudo apt-get install -y python3 python3-pip python3-tk git
+
+# Python serial driver
+pip install -r requirements.txt
+
+# Serial USB permissions
+sudo usermod -a -G dialout $USER
+sudo chmod 666 /dev/ttyUSB* /dev/ttyACM* 2>/dev/null || true
+```
+
+### 3. Hardware Connection
 1. Connect the **12V 5A DC power supply** to the DC barrel jack on the RoArm-M1 base board.
-2. Connect the arm to your Linux PC via a **USB Type-C cable**.
-3. Grant read/write permissions to serial ports:
-   ```bash
-   sudo usermod -a -G dialout $USER
-   sudo chmod 666 /dev/ttyUSB* /dev/ttyACM*
-   ```
-   *(Log out and log back in for dialout group changes to take effect permanently).*
+2. Connect the arm to your PC via a **USB Type-C cable**.
 
-4. Install Python dependencies:
-   ```bash
-   pip install pyserial
-   sudo apt-get install python3-tk
-   ```
-
-### Running the Applications
+### 4. Running the Applications
 
 ```bash
 # 1. Launch the All-in-One Desktop Studio (Recommended)

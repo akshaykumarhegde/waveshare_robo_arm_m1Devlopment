@@ -1,0 +1,3 @@
+# Waveshare RoArm-M1 Python Dependencies
+# Core Serial Driver & Studio requirements
+pyserial>=3.5
